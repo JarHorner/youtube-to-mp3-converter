@@ -26,6 +26,11 @@ env/
 Thumbs.db
 desktop.ini
 
+# PyInstaller
+dist/
+build/
+*.spec
+
 # IDEs
 .vscode/
 .idea/

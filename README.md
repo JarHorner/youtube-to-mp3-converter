@@ -52,6 +52,26 @@ Or download directly from [ffmpeg.org](https://ffmpeg.org/download.html).
 python yt_to_mp3_gui.py
 ```
 
+## Building a Standalone Executable
+
+You can package the app into a single `.exe` (Windows) so it can be run without Python installed.
+
+**1. Install PyInstaller**
+```bash
+pip install pyinstaller
+```
+
+**2. Build the exe**
+```bash
+pyinstaller --onefile --windowed --name "YT-to-MP3" yt_to_mp3_gui.py
+```
+
+**3. Find your exe**
+
+The finished executable will be in the `dist/` folder.
+
+> **Note:** ffmpeg is not bundled — users will still need to install it separately (see Installation above).
+
 ## Troubleshooting
 
 **The app suddenly stops working / videos won't download**
