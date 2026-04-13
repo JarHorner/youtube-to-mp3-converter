@@ -7,7 +7,7 @@ A lightweight desktop app to convert YouTube videos to MP3 files.
 
 ## Screenshots
 
-> GUI version running with a dark theme, URL input, folder picker, bitrate selector, and live log output.
+> GUI version with a dark theme, URL input, download queue, folder picker, bitrate selector, artist/title metadata fields, cancel button, and live log output.
 
 ## Features
 
@@ -16,6 +16,10 @@ A lightweight desktop app to convert YouTube videos to MP3 files.
 - 📁 Choose your output folder
 - 🎚️ Bitrate options: 128 / 192 / 256 / 320 kbps
 - 📋 Live log showing download progress
+- 📜 Download queue — add multiple URLs and convert them in one go
+- ⏹️ Cancel button — stop a download cleanly at any time
+- 🏷️ Artist and Title metadata — embedded directly into the MP3's ID3 tags
+- 💾 Settings are saved automatically between sessions
 
 ## Requirements
 
@@ -51,6 +55,13 @@ Or download directly from [ffmpeg.org](https://ffmpeg.org/download.html).
 ```bash
 python yt_to_mp3_gui.py
 ```
+
+1. Paste a YouTube URL into the **URL field** and click **ADD** (or press Enter) to add it to the queue. Repeat for as many videos as you like.
+2. Set your **output folder**, **bitrate**, and optionally an **Artist** and **Title** to embed as metadata — leave these blank to use the channel name and video title automatically.
+3. Click **CONVERT QUEUE** to start. Each item in the queue will show its status as it progresses.
+4. Use the **CANCEL** button at any time to stop the current download.
+
+Your output folder and bitrate are saved automatically and restored on next launch.
 
 ## Building a Standalone Executable
 

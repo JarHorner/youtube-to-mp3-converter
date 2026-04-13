@@ -98,6 +98,8 @@ class App(tk.Tk):
         cfg = load_config()
         self.dir_var     = tk.StringVar(value=cfg.get("output_dir", os.path.expanduser("~")))
         self.quality_var = tk.StringVar(value=cfg.get("quality", "192"))
+        self.artist_var  = tk.StringVar()
+        self.title_var   = tk.StringVar()
 
         # persist settings on change
         self.dir_var.trace_add("write",     lambda *_: self._save_config())
@@ -203,6 +205,28 @@ class App(tk.Tk):
         btn_row.pack(anchor="w")
         for kbps in ("128", "192", "256", "320"):
             self._radio_btn(btn_row, kbps)
+
+        # metadata: artist + title
+        meta_frame = tk.Frame(form, bg=BG)
+        meta_frame.pack(fill="x", pady=(0, 24))
+        meta_frame.columnconfigure(0, weight=1)
+        meta_frame.columnconfigure(1, weight=1)
+
+        artist_col = tk.Frame(meta_frame, bg=BG)
+        artist_col.grid(row=0, column=0, sticky="ew", padx=(0, 8))
+        self._field_label(artist_col, "ARTIST  (optional)")
+        self._make_entry(artist_col, self.artist_var, width=26).pack(
+            fill="x", ipady=8, ipadx=8)
+        tk.Label(artist_col, text="leave blank to use channel name",
+                 font=self.f_sub, fg=MUTED, bg=BG).pack(anchor="w", pady=(3, 0))
+
+        title_col = tk.Frame(meta_frame, bg=BG)
+        title_col.grid(row=0, column=1, sticky="ew")
+        self._field_label(title_col, "TITLE  (optional)")
+        self._make_entry(title_col, self.title_var, width=26).pack(
+            fill="x", ipady=8, ipadx=8)
+        tk.Label(title_col, text="leave blank to use video title",
+                 font=self.f_sub, fg=MUTED, bg=BG).pack(anchor="w", pady=(3, 0))
 
         # convert + cancel buttons
         btn_frame = tk.Frame(form, bg=BG)
@@ -415,6 +439,8 @@ class App(tk.Tk):
         cancel   = self._cancel_flag
         out_dir  = self.dir_var.get()
         quality  = self.quality_var.get()
+        artist   = self.artist_var.get().strip()
+        title    = self.title_var.get().strip()
 
         class SilentLogger:
             def debug(self, msg):   pass
@@ -425,20 +451,39 @@ class App(tk.Tk):
             if cancel.is_set():
                 raise yt_dlp.utils.DownloadCancelled()
 
+        # build ffmpeg metadata args only for fields the user filled in
+        meta_args = []
+        if artist:
+            meta_args += ["-metadata", f"artist={artist}"]
+        if title:
+            meta_args += ["-metadata", f"title={title}"]
+
+        postprocessors = [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": quality,
+            },
+            {
+                "key": "FFmpegMetadata",
+                "add_metadata": True,
+            },
+        ]
+
         os.makedirs(out_dir, exist_ok=True)
         ydl_opts = {
             "format": "bestaudio/best",
             "outtmpl": os.path.join(out_dir, "%(title)s.%(ext)s"),
-            "postprocessors": [{
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "mp3",
-                "preferredquality": quality,
-            }],
+            "postprocessors": postprocessors,
             "logger": SilentLogger(),
             "progress_hooks": [progress_hook],
             "quiet": True,
             "no_warnings": True,
         }
+
+        # only pass postprocessor_args if we have custom metadata
+        if meta_args:
+            ydl_opts["postprocessor_args"] = {"ffmpegmetadata": meta_args}
 
         try:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
