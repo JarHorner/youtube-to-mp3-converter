@@ -48,26 +48,9 @@ Or download directly from [ffmpeg.org](https://ffmpeg.org/download.html).
 
 ## Usage
 
-**GUI app**
 ```bash
 python yt_to_mp3_gui.py
 ```
-
-**Command-line version**
-```bash
-# Basic — saves to current folder
-python yt_to_mp3.py https://www.youtube.com/watch?v=...
-
-# Custom output folder + bitrate
-python yt_to_mp3.py https://youtu.be/... -o ~/Music -q 320
-```
-
-### CLI options
-
-| Flag | Description | Default |
-|------|-------------|---------|
-| `-o`, `--output` | Output directory | Current folder |
-| `-q`, `--quality` | Bitrate in kbps (`128`, `192`, `256`, `320`) | `192` |
 
 ## Troubleshooting
 
